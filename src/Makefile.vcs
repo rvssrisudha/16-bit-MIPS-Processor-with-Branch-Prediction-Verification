@@ -1,0 +1,61 @@
+# ============================================================
+#  Makefile.vcs    updated with BPU extension files
+#
+#  Usage:
+#    make           compile + run + coverage
+#    make comp      compile only
+#    make run       run simulation only
+#
+#  Requires UVM_HOME set in your shell before running.
+#  See run instructions below for your specific environment.
+# ============================================================
+
+include $(UVM_HOME)/Makefile.vcs
+
+UVM_VERBOSITY = UVM_HIGH
+DUT_DIR       = ../Processor
+TEST_DIR      = .
+TEST_NAME     = processor_test
+SEED          = 14788478
+
+DUT_SOURCES = \
+	+incdir+$(DUT_DIR) $(DUT_DIR)/Main_Processor.v \
+	+incdir+$(DUT_DIR) $(DUT_DIR)/bpu.sv \
+	+incdir+$(DUT_DIR) $(DUT_DIR)/perf_counters.sv \
+	+incdir+$(DUT_DIR) $(DUT_DIR)/Adder.v \
+        +incdir+$(DUT_DIR) $(DUT_DIR)/black_box.v \
+	+incdir+$(DUT_DIR) $(DUT_DIR)/grey_box.v \
+	+incdir+$(DUT_DIR) $(DUT_DIR)/adder_internal.v \
+	+incdir+$(DUT_DIR) $(DUT_DIR)/ALU.v \
+	+incdir+$(DUT_DIR) $(DUT_DIR)/comp.v \
+	+incdir+$(DUT_DIR) $(DUT_DIR)/Control_Unit.v \
+	+incdir+$(DUT_DIR) $(DUT_DIR)/data_mem.v \
+	+incdir+$(DUT_DIR) $(DUT_DIR)/full_adder.v \
+	+incdir+$(DUT_DIR) $(DUT_DIR)/halfadder.v \
+	+incdir+$(DUT_DIR) $(DUT_DIR)/inst_mem.v \
+	+incdir+$(DUT_DIR) $(DUT_DIR)/mux2_1_1bit.v \
+	+incdir+$(DUT_DIR) $(DUT_DIR)/mux4_1_16bit.v \
+	+incdir+$(DUT_DIR) $(DUT_DIR)/reg_file.v \
+	+incdir+$(DUT_DIR) $(DUT_DIR)/wallace_8bit.v
+
+TEST_SOURCES = \
+	+incdir+$(TEST_DIR) $(TEST_DIR)/top.sv \
+	+incdir+$(TEST_DIR) $(TEST_DIR)/processor_interface.sv
+
+all: comp runnurg
+
+comp:
+	$(VCS) -cm line+cond+fsm -Mupdate +v2k -sverilog \
+	       -timescale=1ps/1ps \
+	       +define+SIMULATION \
+	       $(DUT_SOURCES) $(TEST_SOURCES) \
+	       -l compile.log \
+	       +vcs+dupvars+verilog.vpd -debug_all
+
+run:
+	$(SIMV) -cm line+cond+fsm \
+	        +ntb_random_seed=$(SEED) \
+	        +UVM_TESTNAME=$(TEST_NAME)
+
+runnurg: run
+	urg -dir simv.vdb
