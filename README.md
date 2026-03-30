@@ -35,7 +35,7 @@
 
 ## 1. Project Overview
 
-This project started as a **UVM verification environment for a pre-existing 4-stage pipelined MIPS processor**. The scope was then extended to include the full design, integration, verification, and formal proof of a **2-bit saturating Branch Prediction Unit (BPU)**.
+This project started as a **UVM verification environment for a pre-existing 5-stage pipelined MIPS processor**. The scope was then extended to include the full design, integration, verification, and formal proof of a **2-bit saturating Branch Prediction Unit (BPU)**.
 
 The work covers three distinct engineering disciplines:
 
@@ -50,12 +50,12 @@ The work covers three distinct engineering disciplines:
 The DUT is a **16-bit 4-stage pipelined MIPS processor** with the following pipeline structure:
 
 ```
- ┌──────────────────────────────────────────────────────────┐
- │  Part 1 (IF)  │  Part 2 (ID)  │  Part 3 (EX)  │  Part 4 (WB)  │
- │  inst_mem     │  Control Unit  │  ALU           │  reg_file      │
- │  PC register  │  Reg File read │  data_mem      │  writeback     │
- │  BPU predict  │  BPU resolve   │                │                │
- └──────────────────────────────────────────────────────────┘
+ ┌────────────────────────────────────────────────────────────────────────────────────┐
+ │  Part 1 (IF)  │  Part 2 (ID)  │  Part 3 (EX)  │  Part 4 (MEM)    │  Part 5(WB)     |
+ │  inst_mem     │  Control Unit  │  ALU           │  data_mem      │   reg_file      |
+ │  PC register  │  Reg File read │  data_mem      │                │   writeback     |
+ │  BPU predict  │  BPU resolve   │                │                │                 |
+ └────────────────────────────────────────────────────────────────────────────────-───┘
 ```
 
 **Key signals monitored by the UVM testbench:**
